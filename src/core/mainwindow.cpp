@@ -459,6 +459,7 @@ MainWindow::MainWindow(Application *app, SharedPtr<SystemTrayIcon> tray_icon, OS
   ui_->action_stop->setIcon(IconLoader::Load(QStringLiteral("media-playback-stop")));
   ui_->action_stop_after_this_track->setIcon(IconLoader::Load(QStringLiteral("media-playback-stop")));
   ui_->action_next_track->setIcon(IconLoader::Load(QStringLiteral("media-skip-forward")));
+  ui_->action_next_album->setIcon(IconLoader::Load(QStringLiteral("media-skip-album")));
   ui_->action_quit->setIcon(IconLoader::Load(QStringLiteral("application-exit")));
 
   // Playlist
@@ -516,6 +517,7 @@ MainWindow::MainWindow(Application *app, SharedPtr<SystemTrayIcon> tray_icon, OS
 
   // Action connections
   QObject::connect(ui_->action_next_track, &QAction::triggered, &*app_->player(), &Player::Next);
+  QObject::connect(ui_->action_next_album, &QAction::triggered, &*app_->player(), &Player::NextAlbum);
   QObject::connect(ui_->action_previous_track, &QAction::triggered, &*app_->player(), &Player::Previous);
   QObject::connect(ui_->action_play_pause, &QAction::triggered, &*app_->player(), &Player::PlayPauseHelper);
   QObject::connect(ui_->action_stop, &QAction::triggered, &*app_->player(), &Player::Stop);
@@ -577,6 +579,7 @@ MainWindow::MainWindow(Application *app, SharedPtr<SystemTrayIcon> tray_icon, OS
 
   // Give actions to buttons
   ui_->forward_button->setDefaultAction(ui_->action_next_track);
+  ui_->next_album_button->setDefaultAction(ui_->action_next_album);
   ui_->back_button->setDefaultAction(ui_->action_previous_track);
   ui_->pause_play_button->setDefaultAction(ui_->action_play_pause);
   ui_->stop_button->setDefaultAction(ui_->action_stop);
@@ -641,6 +644,7 @@ MainWindow::MainWindow(Application *app, SharedPtr<SystemTrayIcon> tray_icon, OS
   QObject::connect(ui_->track_slider, &TrackSlider::SeekBackward, &*app_->player(), &Player::SeekBackward);
   QObject::connect(ui_->track_slider, &TrackSlider::Previous, &*app_->player(), &Player::Previous);
   QObject::connect(ui_->track_slider, &TrackSlider::Next, &*app_->player(), &Player::Next);
+  QObject::connect(ui_->track_slider, &TrackSlider::NextAlbum, &*app_->player(), &Player::NextAlbum);
 
   // Collection connections
   QObject::connect(&*app_->collection(), &SCollection::Error, this, &MainWindow::ShowErrorDialog);
@@ -808,6 +812,7 @@ MainWindow::MainWindow(Application *app, SharedPtr<SystemTrayIcon> tray_icon, OS
   QObject::connect(&*tray_icon_, &SystemTrayIcon::SeekForward, &*app_->player(), &Player::SeekForward);
   QObject::connect(&*tray_icon_, &SystemTrayIcon::SeekBackward, &*app_->player(), &Player::SeekBackward);
   QObject::connect(&*tray_icon_, &SystemTrayIcon::NextTrack, &*app_->player(), &Player::Next);
+  QObject::connect(&*tray_icon_, &SystemTrayIcon::NextAlbum, &*app_->player(), &Player::NextAlbum);
   QObject::connect(&*tray_icon_, &SystemTrayIcon::PreviousTrack, &*app_->player(), &Player::Previous);
   QObject::connect(&*tray_icon_, &SystemTrayIcon::ShowHide, this, &MainWindow::ToggleShowHide);
   QObject::connect(&*tray_icon_, &SystemTrayIcon::ChangeVolume, this, &MainWindow::VolumeWheelEvent);
@@ -1153,6 +1158,7 @@ void MainWindow::ReloadSettings() {
   ui_->pause_play_button->setIconSize(QSize(iconsize, iconsize));
   ui_->stop_button->setIconSize(QSize(iconsize, iconsize));
   ui_->forward_button->setIconSize(QSize(iconsize, iconsize));
+  ui_->next_album_button->setIconSize(QSize(iconsize, iconsize));
   ui_->button_love->setIconSize(QSize(iconsize, iconsize));
 
   s.beginGroup(BackendSettingsPage::kSettingsGroup);

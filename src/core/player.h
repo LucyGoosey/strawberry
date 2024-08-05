@@ -79,6 +79,7 @@ class PlayerInterface : public QObject {
 
   // Skips this track.  Might load more of the current radio station.
   virtual void Next() = 0;
+  virtual void NextAlbum() = 0;
   virtual void Previous() = 0;
   virtual void PlayPlaylist(const QString &playlist_name) = 0;
   virtual void SetVolumeFromEngine(const uint volume) = 0;
@@ -164,6 +165,7 @@ class Player : public PlayerInterface {
   void PlayPauseHelper() override { PlayPause(play_offset_nanosec_); }
   void RestartOrPrevious() override;
   void Next() override;
+  void NextAlbum() override;
   void Previous() override;
   void PlayPlaylist(const QString &playlist_name) override;
   void SetVolumeFromSlider(const int value) override;
@@ -197,10 +199,10 @@ class Player : public PlayerInterface {
   void TrackAboutToEnd();
   void TrackEnded();
   // Play the next item on the playlist - disregarding radio stations like last.fm that might have more tracks.
-  void NextItem(const EngineBase::TrackChangeFlags change, const Playlist::AutoScroll autoscroll);
+  void NextItem(const EngineBase::TrackChangeFlags change, const Playlist::AutoScroll autoscroll, const bool skip_album = false);
   void PreviousItem(const EngineBase::TrackChangeFlags change);
 
-  void NextInternal(const EngineBase::TrackChangeFlags, const Playlist::AutoScroll autoscroll);
+  void NextInternal(const EngineBase::TrackChangeFlags, const Playlist::AutoScroll autoscroll, const bool skip_album = false);
   void PlayPlaylistInternal(const EngineBase::TrackChangeFlags, const Playlist::AutoScroll autoscroll, const QString &playlist_name);
 
   void FatalError();

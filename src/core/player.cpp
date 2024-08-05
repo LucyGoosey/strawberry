@@ -378,18 +378,20 @@ void Player::HandleLoadResult(const UrlHandler::LoadResult &result) {
 
 void Player::Next() { NextInternal(EngineBase::TrackChangeType::Manual, Playlist::AutoScroll::Always); }
 
-void Player::NextInternal(const EngineBase::TrackChangeFlags change, const Playlist::AutoScroll autoscroll) {
+void Player::NextAlbum() { NextInternal(EngineBase::TrackChangeType::Manual, Playlist::AutoScroll::Always, true); }
+
+void Player::NextInternal(const EngineBase::TrackChangeFlags change, const Playlist::AutoScroll autoscroll, const bool skip_album) {
 
   pause_time_ = QDateTime();
   play_offset_nanosec_ = 0;
 
   if (HandleStopAfter(autoscroll)) return;
 
-  NextItem(change, autoscroll);
+  NextItem(change, autoscroll, skip_album);
 
 }
 
-void Player::NextItem(const EngineBase::TrackChangeFlags change, const Playlist::AutoScroll autoscroll) {
+void Player::NextItem(const EngineBase::TrackChangeFlags change, const Playlist::AutoScroll autoscroll, const bool skip_album) {
 
   pause_time_ = QDateTime();
   play_offset_nanosec_ = 0;
@@ -417,7 +419,7 @@ void Player::NextItem(const EngineBase::TrackChangeFlags change, const Playlist:
   // Manual track changes override "Repeat track"
   const bool ignore_repeat_track = change & EngineBase::TrackChangeType::Manual;
 
-  int i = active_playlist->next_row(ignore_repeat_track);
+  int i = active_playlist->next_row(ignore_repeat_track, skip_album);
   if (i == -1) {
     app_->playlist_manager()->active()->set_current_row(i);
     app_->playlist_manager()->active()->reset_last_played();

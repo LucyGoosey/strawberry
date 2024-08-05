@@ -73,6 +73,7 @@ class SystemTrayIcon : public QSystemTrayIcon {
   void SeekForward();
   void SeekBackward();
   void NextTrack();
+  void NextAlbum();
   void PreviousTrack();
   void ShowHide();
   void PlayPause();

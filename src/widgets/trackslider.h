@@ -71,6 +71,7 @@ class TrackSlider : public QWidget {
   void SeekForward();
   void SeekBackward();
   void Next();
+  void NextAlbum();
   void Previous();
 
  private slots:

@@ -510,10 +510,10 @@ bool Playlist::FilterContainsVirtualIndex(const int i) const {
   return filter_->filterAcceptsRow(virtual_items_[i], QModelIndex());
 }
 
-int Playlist::NextVirtualIndex(int i, const bool ignore_repeat_track) const {
+int Playlist::NextVirtualIndex(int i, const bool ignore_repeat_track, const bool skip_album = false) const {
 
   const PlaylistSequence::RepeatMode repeat_mode = RepeatMode();
-  const bool album_only = repeat_mode == PlaylistSequence::RepeatMode::Album || ShuffleMode() == PlaylistSequence::ShuffleMode::InsideAlbum;
+  const bool album_only = skip_album || repeat_mode == PlaylistSequence::RepeatMode::Album || ShuffleMode() == PlaylistSequence::ShuffleMode::InsideAlbum;
 
   // This one's easy - if we have to repeat the current track then just return i
   if (repeat_mode == PlaylistSequence::RepeatMode::Track && !ignore_repeat_track) {
@@ -541,11 +541,21 @@ int Playlist::NextVirtualIndex(int i, const bool ignore_repeat_track) const {
       continue;
     }
     Song this_song = item_at(virtual_items_[j])->Metadata();
-    if (((last_song.is_compilation() && this_song.is_compilation()) ||
-         last_song.effective_albumartist() == this_song.effective_albumartist()) &&
-        last_song.album() == this_song.album() &&
-        FilterContainsVirtualIndex(j)) {
-      return j;  // Found one
+    bool same_artist = ((last_song.is_compilation() && this_song.is_compilation()) || last_song.effective_albumartist() == this_song.effective_albumartist());
+    bool same_album = last_song.album() == this_song.album();
+    if(skip_album)
+    {
+        if(same_album)
+            continue;
+    }
+    else
+    {
+        if(!same_artist || !same_album)
+            continue;
+    }
+
+    if(FilterContainsVirtualIndex(j)) {
+            return j;
     }
   }
 
@@ -591,14 +601,14 @@ int Playlist::PreviousVirtualIndex(int i, const bool ignore_repeat_track) const 
 
 }
 
-int Playlist::next_row(const bool ignore_repeat_track) {
+int Playlist::next_row(const bool ignore_repeat_track, const bool skip_album) {
 
   // Any queued items take priority
   if (!queue_->is_empty()) {
     return queue_->PeekNext();
   }
 
-  int next_virtual_index = NextVirtualIndex(current_virtual_index_, ignore_repeat_track);
+  int next_virtual_index =  NextVirtualIndex(current_virtual_index_, ignore_repeat_track, skip_album);
   if (next_virtual_index >= virtual_items_.count()) {
     // We've gone off the end of the playlist.
 

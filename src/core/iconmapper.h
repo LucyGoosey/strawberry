@@ -106,6 +106,7 @@ static const QMap<QString, IconProperties> iconmapper_ = {  // clazy:exclude=non
     { QStringLiteral("media-seek-forward"),            { {}} },
     { QStringLiteral("media-skip-backward"),           { {}} },
     { QStringLiteral("media-skip-forward"),            { {}} },
+    { QStringLiteral("media-skip-album"),              { {}} },
     { QStringLiteral("media-playback-stop"),           { {QStringLiteral("media-stop")}} },
     { QStringLiteral("moodbar"),                       { {QStringLiteral("preferences-desktop-icons")}} },
     { QStringLiteral("nvidia"),                        { {}} },

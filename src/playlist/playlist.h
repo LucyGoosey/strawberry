@@ -174,7 +174,7 @@ class Playlist : public QAbstractListModel {
   int last_played_row() const;
   void reset_last_played() { last_played_item_index_ = QPersistentModelIndex(); }
   void reset_played_indexes() { played_indexes_.clear(); }
-  int next_row(const bool ignore_repeat_track = false);
+  int next_row(const bool ignore_repeat_track = false, const bool skip_album = false);
   int previous_row(const bool ignore_repeat_track = false);
 
   QModelIndex current_index() const;
@@ -324,7 +324,7 @@ class Playlist : public QAbstractListModel {
 
  private:
   void SetCurrentIsPaused(const bool paused);
-  int NextVirtualIndex(int i, const bool ignore_repeat_track) const;
+  int NextVirtualIndex(int i, const bool ignore_repeat_track, const bool skip_album) const;
   int PreviousVirtualIndex(int i, const bool ignore_repeat_track) const;
   bool FilterContainsVirtualIndex(const int i) const;
 
